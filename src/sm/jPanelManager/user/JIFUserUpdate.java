@@ -1,0 +1,425 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package sm.jPanelManager.user;
+
+import java.awt.Color;
+import java.util.List;
+import java.util.Vector;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+
+/**
+ *
+ * @author Ngoc Tuan
+ */
+public class JIFUserUpdate extends javax.swing.JInternalFrame {
+
+    private UserDAO userDAO = new UserDAO();
+    private PermissionDAO permissionDAO = new PermissionDAO();
+
+    /**
+     * Creates new form JIFUserUpdate
+     */
+    public JIFUserUpdate() {
+        initComponents();
+
+        loadPermission();
+    }
+
+    //fill data ra bảng
+    public void fillData() {
+
+        List<User> users = userDAO.getAll();
+
+        DefaultTableModel dtm = new DefaultTableModel();
+
+        dtm.addColumn("idUser");
+        dtm.addColumn("Username");
+        dtm.addColumn("Password");
+        dtm.addColumn("Permission");
+
+        for (User user : users) {
+            Vector<Object> vector = new Vector();
+            vector.add(user.getIdUser());
+            vector.add(user.getUsername());
+            vector.add(user.getPassword());
+            vector.add(user.getPermissionName());
+
+            dtm.addRow(vector);
+        }
+
+        JPUserManager.jTableUser.setModel(dtm);
+
+        JPUserManager.jTableUser.removeColumn(JPUserManager.jTableUser.getColumnModel().getColumn(2));
+        JPUserManager.jTableUser.removeColumn(JPUserManager.jTableUser.getColumnModel().getColumn(0));
+    }
+
+    private boolean validateUserU() {
+        boolean flag = true;
+
+        //check subject name and class name phải là duy nhất ko được trùng, chuyển flag = false
+        List<User> users = userDAO.getAll();
+
+        int index = JPUserManager.jTableUser.getSelectedRow();
+        TableModel model = JPUserManager.jTableUser.getModel();
+
+        if (flag) {
+            for (User user : users) {
+                String getRowClick = model.getValueAt(index, 1).toString();
+                String getJTextUserN = jTextFieldUserN.getText();
+
+                if ((getJTextUserN.toLowerCase().equals(user.getUsername().toLowerCase()))
+                        && (!getRowClick.equalsIgnoreCase(getJTextUserN))) {
+                    JOptionPane.showMessageDialog(rootPane, "User name " + getJTextUserN + " already exist!!!", "Warning", JOptionPane.OK_OPTION);
+
+                    flag = false;
+                }
+            }
+        }
+
+        if (flag) {
+            for (User user : users) {
+                String getJTextUserN = jTextFieldUserN.getText();
+
+                if (getJTextUserN.toLowerCase().equals(user.getUsername().toLowerCase())) {
+                    int yes = JOptionPane.showConfirmDialog(rootPane, "User name " + getJTextUserN + " already exist!!! Do you want to change?", "Warning", JOptionPane.YES_NO_OPTION);
+                    if (yes == JOptionPane.YES_OPTION) {
+                        flag = false;
+                        break;
+                    } else {
+                        flag = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (flag) {
+            if (jTextFieldUserN.getText().isEmpty() || String.valueOf(jPasswordField.getPassword()).isEmpty()) {
+                JOptionPane.showMessageDialog(rootPane, "One Or More Empty Field!!!", "Warning", JOptionPane.ERROR_MESSAGE);
+
+                return false;
+            } else {
+                return true;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    private int idPermission() {
+        // TODO add your handling code here:
+        int idPermission = 0;
+        List<Permission> permissions = permissionDAO.getAll();
+        for (Permission permission : permissions) {
+            if (jComboBoxPer.getSelectedItem().toString().equalsIgnoreCase(permission.getPermissionName())) {
+                idPermission = permission.getIdPermission();
+            }
+        }
+
+        return idPermission;
+    }
+
+    private void loadPermission() {
+        // TODO add your handling code here:
+        List<Permission> permissions = permissionDAO.getAllPer();
+
+        DefaultComboBoxModel dcbm = new DefaultComboBoxModel();
+        for (Permission permission : permissions) {
+            dcbm.addElement(permission.getPermissionName());
+        }
+
+        jComboBoxPer.setModel(dcbm);
+    }
+
+    //get idStudent từ bảng
+    private int idUser() {
+        int index = JPUserManager.jTableUser.getSelectedRow();
+        TableModel model = JPUserManager.jTableUser.getModel();
+
+        return Integer.valueOf(model.getValueAt(index, 0).toString());
+    }
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jPanelU = new javax.swing.JPanel();
+        jButtonU = new javax.swing.JLabel();
+        jLabePer = new javax.swing.JLabel();
+        jLabelPass = new javax.swing.JLabel();
+        jLabelLUserN = new javax.swing.JLabel();
+        jLabelUserU = new javax.swing.JLabel();
+        jButtonClear = new javax.swing.JLabel();
+        jComboBoxPer = new javax.swing.JComboBox<>();
+        jTextFieldUserN = new javax.swing.JTextField();
+        jPasswordField = new javax.swing.JPasswordField();
+
+        setClosable(true);
+        setResizable(true);
+
+        jPanelU.setBackground(new java.awt.Color(255, 255, 255));
+        jPanelU.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jPanelUMouseMoved(evt);
+            }
+        });
+
+        jButtonU.setBackground(new java.awt.Color(53, 173, 164));
+        jButtonU.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jButtonU.setForeground(new java.awt.Color(255, 255, 255));
+        jButtonU.setText("<html><div style='text-align: right;'>&emsp;&emsp;&emsp;&emsp;Update</div></html> ");
+        jButtonU.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(53, 173, 164), 1, true));
+        jButtonU.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jButtonU.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButtonU.setOpaque(true);
+        jButtonU.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseDragged(java.awt.event.MouseEvent evt) {
+                jButtonUMouseDragged(evt);
+            }
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jButtonUMouseMoved(evt);
+            }
+        });
+        jButtonU.addMouseWheelListener(new java.awt.event.MouseWheelListener() {
+            public void mouseWheelMoved(java.awt.event.MouseWheelEvent evt) {
+                jButtonUMouseWheelMoved(evt);
+            }
+        });
+        jButtonU.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButtonUMouseClicked(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                jButtonUMouseReleased(evt);
+            }
+        });
+
+        jLabePer.setBackground(new java.awt.Color(255, 255, 255));
+        jLabePer.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        jLabePer.setText("Permission:");
+
+        jLabelPass.setBackground(new java.awt.Color(255, 255, 255));
+        jLabelPass.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        jLabelPass.setText("Password:");
+
+        jLabelLUserN.setBackground(new java.awt.Color(255, 255, 255));
+        jLabelLUserN.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        jLabelLUserN.setText("Username:");
+
+        jLabelUserU.setBackground(new java.awt.Color(255, 255, 255));
+        jLabelUserU.setFont(new java.awt.Font("Century Gothic", 1, 24)); // NOI18N
+        jLabelUserU.setText("Update User");
+
+        jButtonClear.setBackground(new java.awt.Color(255, 51, 51));
+        jButtonClear.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jButtonClear.setForeground(new java.awt.Color(255, 255, 255));
+        jButtonClear.setText("<html><div style='text-align: right;'>&emsp;&emsp;&emsp;&emsp;Clear</div></html> ");
+        jButtonClear.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(255, 51, 51), 1, true));
+        jButtonClear.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jButtonClear.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButtonClear.setOpaque(true);
+        jButtonClear.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseDragged(java.awt.event.MouseEvent evt) {
+                jButtonClearMouseDragged(evt);
+            }
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jButtonClearMouseMoved(evt);
+            }
+        });
+        jButtonClear.addMouseWheelListener(new java.awt.event.MouseWheelListener() {
+            public void mouseWheelMoved(java.awt.event.MouseWheelEvent evt) {
+                jButtonClearMouseWheelMoved(evt);
+            }
+        });
+        jButtonClear.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButtonClearMouseClicked(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                jButtonClearMouseReleased(evt);
+            }
+        });
+
+        jComboBoxPer.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        javax.swing.GroupLayout jPanelULayout = new javax.swing.GroupLayout(jPanelU);
+        jPanelU.setLayout(jPanelULayout);
+        jPanelULayout.setHorizontalGroup(
+            jPanelULayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanelULayout.createSequentialGroup()
+                .addGap(158, 158, 158)
+                .addGroup(jPanelULayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabePer)
+                    .addComponent(jLabelPass)
+                    .addComponent(jLabelLUserN))
+                .addGap(18, 18, 18)
+                .addGroup(jPanelULayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanelULayout.createSequentialGroup()
+                        .addComponent(jButtonClear, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jButtonU, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanelULayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addComponent(jPasswordField, javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jComboBoxPer, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jTextFieldUserN, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(24, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelULayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabelUserU)
+                .addGap(200, 200, 200))
+        );
+        jPanelULayout.setVerticalGroup(
+            jPanelULayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanelULayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabelUserU)
+                .addGap(46, 46, 46)
+                .addGroup(jPanelULayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabelLUserN)
+                    .addComponent(jTextFieldUserN, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanelULayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabelPass)
+                    .addComponent(jPasswordField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanelULayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabePer)
+                    .addComponent(jComboBoxPer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 66, Short.MAX_VALUE)
+                .addGroup(jPanelULayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButtonU, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButtonClear, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
+        );
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanelU, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanelU, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void jButtonUMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonUMouseDragged
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButtonUMouseDragged
+
+    private void jButtonUMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonUMouseMoved
+        // TODO add your handling code here:
+        jButtonU.setBackground(new Color(255, 255, 255));
+        jButtonU.setForeground(new Color(53, 173, 164));
+    }//GEN-LAST:event_jButtonUMouseMoved
+
+    private void jButtonUMouseWheelMoved(java.awt.event.MouseWheelEvent evt) {//GEN-FIRST:event_jButtonUMouseWheelMoved
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButtonUMouseWheelMoved
+
+    private void jButtonUMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonUMouseClicked
+        // TODO add your handling code here:
+        //Check form add student
+        try {
+            if (validateUserU()) {
+
+                User user = new User(
+                        idUser(),
+                        jTextFieldUserN.getText(),
+                        String.valueOf(jPasswordField.getPassword())
+                );
+
+                boolean rowUser = userDAO.update(user);
+
+                User userPermission = new User(
+                        idPermission(),
+                        idUser()
+                );
+
+                boolean rowUserPermission = userDAO.updateUserPer(userPermission);
+
+                if (rowUser && rowUserPermission) {
+                    JOptionPane.showMessageDialog(rootPane, "User Data Updated!", "Notification", JOptionPane.INFORMATION_MESSAGE);
+
+                    //khi Update thành công thì show data lên bảng
+                    fillData();
+                } else {
+                    JOptionPane.showMessageDialog(rootPane, "Error Update User!!!", "Warning", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        } catch (Exception e) {
+        }
+    }//GEN-LAST:event_jButtonUMouseClicked
+
+    private void jButtonUMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonUMouseReleased
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButtonUMouseReleased
+
+    private void jButtonClearMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonClearMouseDragged
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButtonClearMouseDragged
+
+    private void jButtonClearMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonClearMouseMoved
+        // TODO add your handling code here:
+        jButtonClear.setBackground(new Color(255, 255, 255));
+        jButtonClear.setForeground(new Color(255, 51, 51));
+    }//GEN-LAST:event_jButtonClearMouseMoved
+
+    private void jButtonClearMouseWheelMoved(java.awt.event.MouseWheelEvent evt) {//GEN-FIRST:event_jButtonClearMouseWheelMoved
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButtonClearMouseWheelMoved
+
+    private void jButtonClearMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonClearMouseClicked
+        // TODO add your handling code here:
+        jTextFieldUserN.setText(null);
+        jPasswordField.setText(null);
+        jComboBoxPer.setSelectedIndex(0);
+    }//GEN-LAST:event_jButtonClearMouseClicked
+
+    private void jButtonClearMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonClearMouseReleased
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButtonClearMouseReleased
+
+    private void jPanelUMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanelUMouseMoved
+        // TODO add your handling code here:
+        jButtonU.setBackground(new Color(53, 173, 164));
+        jButtonU.setForeground(new Color(255, 255, 255));
+
+        jButtonClear.setBackground(new Color(255, 51, 51));
+        jButtonClear.setForeground(new Color(255, 255, 255));
+    }//GEN-LAST:event_jPanelUMouseMoved
+
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    public static javax.swing.JLabel jButtonClear;
+    public static javax.swing.JLabel jButtonU;
+    public static javax.swing.JComboBox<String> jComboBoxPer;
+    private javax.swing.JLabel jLabePer;
+    private javax.swing.JLabel jLabelLUserN;
+    private javax.swing.JLabel jLabelPass;
+    private javax.swing.JLabel jLabelUserU;
+    private javax.swing.JPanel jPanelU;
+    public static javax.swing.JPasswordField jPasswordField;
+    public static javax.swing.JTextField jTextFieldUserN;
+    // End of variables declaration//GEN-END:variables
+}
